@@ -20,23 +20,44 @@ fn main() {
 
     ints.sort();
 
-    let (first, second) = find_sum_vals(&ints, target_val);
+    let (first, second) = find_pair(&ints[0], &ints[1..], &target_val).unwrap();
 
-    println!("{} {}", first, second);
-    println!("{}", first * second);
+    println!("{} + {} = {}", first, second, first + second);
+    println!("{} * {} = {}", first, second, first * second);
+    println!("");
+
+    let (a, b, c) = find_expense(&ints[0], &ints[1..], &target_val).unwrap();
+    println!("{} + {} + {} = {}", a, b, c, a + b + c);
+    println!("{} * {} * {} = {}", a, b, c, a * b * c);
 }
 
-fn find_sum_vals(ints: &Vec<i32>, target: i32) -> (i32, i32) {
-    for big in ints.iter().rev() {
-        for small in ints.iter() {
-            if small > big {
-                break;
-            }
-            else if small + big == target {
-                return (*small, *big);
+fn find_expense<'a>(x: &'a i32, xs: &'a [i32], target: &'_ i32) -> Option<(&'a i32, &'a i32, &'a i32)> {
+    if xs.len() == 0 {
+        return Option::None;
+    }
+
+    if x < target {
+        let rem = *target - x;
+        for i in 0..(xs.len() - 1) {
+            if let Some((a, b)) = find_pair(&xs[i], &xs[i+1..], &rem) {
+                return Option::Some((x, a, b));
             }
         }
     }
 
-    return (0, 0);
+    find_expense(&xs[0], &xs[1..], target)
+}
+
+fn find_pair<'a>(x: &'a i32, xs: &'a [i32], target: &'_ i32) -> Option<(&'a i32, &'a i32)> {
+    if xs.len() == 0 {
+        return Option::None;
+    }
+
+    for val in xs {
+        if x + val == *target {
+            return Option::Some((x, val));
+        }
+    }
+
+    find_pair(&xs[0], &xs[1..], target)
 }
