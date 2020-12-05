@@ -3,8 +3,8 @@ use std::fs;
 use std::cmp;
 use std::io::{self, BufRead};
 
-static TOTAL_ROWS: usize = 128; // Total rows in the aircraft
-static TOTAL_COLS: usize = 8;   // Total seats in any given row
+static TOTAL_ROWS: i32 = 128; // Total rows in the aircraft
+static TOTAL_COLS: i32 = 8;   // Total seats in any given row
 static BSP_ROW_SIZE: usize = 7; // Length of the row identifier of partition string
 
 fn main() {
@@ -22,8 +22,8 @@ fn main() {
     for line in reader.lines() {
         let text = line.unwrap();
 
-        let row: i32 = get_row(0, TOTAL_ROWS as i32 - 1, &text[0..BSP_ROW_SIZE]);
-        let col: i32 = get_col(0, TOTAL_COLS as i32 - 1, &text[BSP_ROW_SIZE..]);
+        let row: i32 = get_row(0, TOTAL_ROWS - 1, &text[0..BSP_ROW_SIZE]);
+        let col: i32 = get_col(0, TOTAL_COLS - 1, &text[BSP_ROW_SIZE..]);
         let id: i32 = get_seat_id(&row, &col);
         ids.push(id);
         id_sum += id;
