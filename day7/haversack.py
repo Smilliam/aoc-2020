@@ -34,7 +34,7 @@ class Bag():
 
 def split_to_map(line):
     if line == 'no other bags.':
-        return None
+        return {}
 
     contents = {}
     split = line.split(', ')
@@ -45,6 +45,34 @@ def split_to_map(line):
         contents[kind] = quantity
 
     return contents
+
+def dfs(from_here, to, bags):
+    contained = bags.get(from_here)
+    if not contained:
+        return 0
+
+    for key in contained:
+        if key == to:
+            return 1
+        if dfs(key, to, bags):
+            return 1
+
+    return 0
+
+def bfs(target, bags):
+    num_bags_contained = 0
+    queue = []
+
+    queue.append((target, 1))
+
+    while len(queue):
+        bag, quantity = queue.pop(0)
+        for key in bags[bag]:
+            num = bags[bag][key]
+            queue.append((key, num * quantity))
+        num_bags_contained += quantity
+         
+    return num_bags_contained - 1
 
 def parse_args():
     import argparse
@@ -64,36 +92,10 @@ if __name__ == '__main__':
             bag_type = line[0]
             bags[bag_type] = split_to_map(line[1])
 
-
-    def dfs(from_here, to):
-        contained = bags.get(from_here)
-        if not contained:
-            return 0
-
-        for key in contained:
-            if key == to:
-                return 1
-            if dfs(key, to):
-                return 1
-
-        return 0
-
-    num_bags_contained = 0
-    def bfs(from_here, multiplier):
-        global num_bags_contained
-        contained = bags.get(from_here)
-        if not contained:
-            return 0
-
-        for key in bags:
-            num_contained = contained.get(key, 0)
-            num_bags_contained += num_contained * multiplier
-            bfs(key, multiplier * num_contained)
-
     num_routes = 0
     for bag in bags:
-        num_routes += dfs(bag, 'shiny gold')
+        num_routes += dfs(bag, 'shiny gold', bags)
 
-    bfs('shiny gold', 1)
+    num_bags_contained = bfs('shiny gold', bags)
     print(num_routes)
     print(num_bags_contained)
