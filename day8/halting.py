@@ -8,7 +8,7 @@ logger.setLevel('INFO')
 class Computer():
     def __init__(self, program):
         self.program = program
-        self.reset()
+        self.reset() # this is silly but we need to reset the instruction exec count
         self.pc = 0
         self.accumulator = 0
 
