@@ -1,4 +1,9 @@
 from enum import Enum
+
+# Based on the excellent series of blog posts
+# by Ruslan Pivak at https://ruslanspivak.com/lsbasi-part7/
+# on building a simple interpreter for Pascal
+
 class Tok(Enum):
     INTEGER = '1234567890'
     PLUS    = '+'
@@ -15,21 +20,23 @@ class Token():
     def __repr__(self):
         return f'Token({self.kind}, {self.value})'
 
+########################################################################
+
 class AST():
     pass
 
 class Num(AST):
     def __init__(self, token):
-        self.kind  = 'Num'
         self.token = token
         self.value = token.value
 
 class BinaryOp(AST):
     def __init__(self, op, left, right):
-        self.kind  = 'BinaryOp'
         self.op    = op
         self.left  = left
         self.right = right
+
+########################################################################
 
 class Lexer():
     def __init__(self, line):
@@ -72,6 +79,13 @@ class Lexer():
                 return Token(Tok.RPAREN, ')')
 
         return Token(Tok.EOF, None)
+
+########################################################################
+
+# CFG described by this parser (for part 2 of day 18)
+# E -> E * E
+# E -> E + E
+# E -> <int> | (E)
 
 class Parser():
     def __init__(self, lexer):
@@ -118,10 +132,12 @@ class Parser():
     def parse(self):
         return self.mul()
 
+########################################################################
+
 def visit(node):
-    if node.kind == 'Num':
+    if isinstance(node, Num):
         return node.value
-    elif node.kind == 'BinaryOp':
+    elif isinstance(node, BinaryOp):
         if node.op.kind == Tok.PLUS:
             return visit(node.left) + visit(node.right)
         elif node.op.kind == Tok.MUL:
