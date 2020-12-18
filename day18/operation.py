@@ -95,19 +95,28 @@ class Parser():
             self.consume(Tok.RPAREN)
             return node
 
-    def bin_expr(self):
+    def plus(self):
         node = self.terminal()
 
-        while self.current.kind in [Tok.PLUS, Tok.MUL]:
+        while self.current.kind == Tok.PLUS:
             token = self.current
-#            import pdb; pdb.set_trace()
-            self.consume(self.current.kind)
+            self.consume(Tok.PLUS)
             node = BinaryOp(token, node, self.terminal())
 
         return node;
 
+    def mul(self):
+        node = self.plus()
+
+        while self.current.kind == Tok.MUL:
+            token = self.current
+            self.consume(Tok.MUL)
+            node = BinaryOp(token, node, self.plus())
+
+        return node;
+
     def parse(self):
-        return self.bin_expr()
+        return self.mul()
 
 def visit(node):
     if node.kind == 'Num':
